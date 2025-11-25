@@ -1,0 +1,184 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Healthcare Chatbot</title>
+    <!-- Bootstrap & Icons -->
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+          integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+          crossorigin="anonymous">
+
+    <!-- jQuery (needed for the script below) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Your custom healthcare chatbot CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}"/>
+</head>
+
+<body>
+<div class="container-fluid h-100">
+    <div class="row justify-content-center h-100">
+        <div class="col-md-8 col-xl-6 chat">
+            <div class="card">
+                <!-- HEADER -->
+                <div class="card-header msg_head">
+                    <div class="card-header-content">
+                        <div class="img_cont">
+                            <img src="{{ url_for('static', filename='robot-assistant_1055629.png') }}"
+                                 class="user_img" alt="Bot avatar">
+                            <span class="online_icon"></span>
+                        </div>
+                        <div class="user_info">
+                            <span>Healthcare Assistant</span>
+                            <p>Your health is our priority.</p>
+                        </div>
+                    </div>
+                    <div class="card-header-right">
+                        <div class="status-badge">
+                            <span class="status-dot"></span>
+                            Online · Avg reply &lt; 1 min
+                        </div>
+                        <button type="button" class="header-chip">Symptoms</button>
+                        <button type="button" class="header-chip">Medications</button>
+                        <button type="button" class="header-chip">Lab reports</button>
+                    </div>
+                </div>
+
+                <!-- MESSAGES -->
+                <div id="messageFormeight" class="card-body msg_card_body">
+                    <!-- Initial welcome message -->
+                    <div class="d-flex justify-content-start mb-4 message-wrapper bot">
+                        <div class="img_cont_msg">
+                            <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png"
+                                 class="user_img_msg" alt="Bot">
+                        </div>
+                        <div class="msg_cotainer">
+                            Hi, I’m your healthcare assistant. 🩺<br>
+                            You can ask me about symptoms, medications, reports, or general health queries.
+                            <span class="msg_time">Now</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FOOTER / INPUT -->
+                <div class="card-footer">
+                    <!-- Suggested quick prompts -->
+                    <div class="suggested-prompts">
+                        <div class="suggested-pill">Check my flu symptoms</div>
+                        <div class="suggested-pill">Explain my lab report</div>
+                        <div class="suggested-pill">Possible side effects of a drug</div>
+                        <div class="suggested-pill">How to manage blood pressure?</div>
+                    </div>
+
+                    <form id="messageArea" class="w-100 d-flex">
+                        <div class="input-wrapper">
+                            <input type="text"
+                                   id="text"
+                                   name="msg"
+                                   placeholder="Describe your symptoms or ask a health question..."
+                                   autocomplete="off"
+                                   class="form-control type_msg"
+                                   required/>
+                            <i class="fas fa-microphone mic-icon"></i>
+                        </div>
+                        <button type="submit" id="send" class="send_btn ml-2">
+                            <span>Send</span>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        // Click on suggested pill -> fill input and focus
+        $(document).on("click", ".suggested-pill", function () {
+            const text = $(this).text();
+            $("#text").val(text).focus();
+        });
+
+        $("#messageArea").on("submit", function (event) {
+            event.preventDefault();
+
+            const date = new Date();
+            const hour = String(date.getHours()).padStart(2, "0");
+            const minute = String(date.getMinutes()).padStart(2, "0");
+            const str_time = hour + ":" + minute;
+            const rawText = $("#text").val().trim();
+
+            if (!rawText) return;
+
+            // USER MESSAGE (uses new message-wrapper + msg_cotainer_send styles)
+            const userHtml =
+                '<div class="d-flex justify-content-end mb-4 message-wrapper">' +
+                '  <div class="msg_cotainer_send">' + rawText +
+                '    <span class="msg_time_send">' + str_time + '</span>' +
+                '  </div>' +
+                '  <div class="img_cont_msg">' +
+                '    <img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" class="user_img_msg" alt="You">' +
+                '  </div>' +
+                '</div>';
+
+            $("#text").val("");
+            $("#messageFormeight").append(userHtml);
+
+            // OPTIONAL: show temporary loading dots while waiting
+            const loadingHtml =
+                '<div class="d-flex justify-content-start mb-4 message-wrapper bot temp-loading">' +
+                '  <div class="img_cont_msg">' +
+                '    <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="user_img_msg" alt="Bot">' +
+                '  </div>' +
+                '  <div class="msg_cotainer">' +
+                '    <div class="loading">' +
+                '      <span class="loading-dot"></span>' +
+                '      <span class="loading-dot"></span>' +
+                '      <span class="loading-dot"></span>' +
+                '    </div>' +
+                '  </div>' +
+                '</div>';
+
+            $("#messageFormeight").append(loadingHtml);
+            $("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
+
+            // AJAX -> backend
+            $.ajax({
+                data: {msg: rawText},
+                type: "POST",
+                url: "/get",
+            }).done(function (data) {
+
+                // remove loading bubble
+                $(".temp-loading").remove();
+
+                const botHtml =
+                    '<div class="d-flex justify-content-start mb-4 message-wrapper bot">' +
+                    '  <div class="img_cont_msg">' +
+                    '    <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="user_img_msg" alt="Bot">' +
+                    '  </div>' +
+                    '  <div class="msg_cotainer">' + data +
+                    '    <span class="msg_time">' + str_time + '</span>' +
+                    '  </div>' +
+                    '</div>';
+
+                $("#messageFormeight").append($.parseHTML(botHtml));
+                $("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

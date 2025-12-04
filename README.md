@@ -150,6 +150,14 @@ The UI is served using **templates/ChatUI.html** + **static/style.css**.
 
 ---
 
+# 📷 **Screenshots**
+
+### 🌐 **Website (Flask Chat UI)**
+
+![Home Screenshot](.static/chatscreen.png)
+
+---
+
 ## 🧱 **Architecture Diagram (Conceptual)**
 
 ```
